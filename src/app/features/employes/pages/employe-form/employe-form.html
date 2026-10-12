@@ -1,0 +1,227 @@
+<a class="retour" routerLink="/employes">
+  <app-icon name="arrow-left" [size]="16" />
+  Retour à l'équipe
+</a>
+
+<header class="page-tete">
+  <div class="page-tete__texte">
+    <span class="eyebrow">{{ modeEdition() ? 'Modification' : 'Nouveau collaborateur' }}</span>
+    <h1 class="display">
+      @if (modeEdition()) {
+        Modifier le <em>profil</em>
+      } @else {
+        Ajouter un <em>employé</em>
+      }
+    </h1>
+  </div>
+</header>
+
+@if (chargement()) {
+  <div class="mise-en-page" aria-busy="true" aria-label="Chargement de la fiche">
+    <div class="skeleton squelette-apercu"></div>
+    <div class="skeleton squelette-formulaire"></div>
+  </div>
+} @else if (erreurChargement(); as message) {
+  <div class="etat etat--erreur" role="alert">
+    <span class="etat__icone"><app-icon name="alert" [size]="22" /></span>
+    <p class="etat__titre">Fiche introuvable</p>
+    <p class="etat__texte">{{ message }}</p>
+    <a class="btn btn-secondary" routerLink="/employes">
+      <app-icon name="arrow-left" [size]="16" />
+      Retour à l'équipe
+    </a>
+  </div>
+} @else {
+  <div class="mise-en-page">
+    <!-- Aperçu en direct de la fiche -->
+    <aside class="apercu" aria-label="Aperçu de la fiche">
+      <p class="apercu__titre">Aperçu</p>
+      <div class="apercu__carte">
+        <app-avatar [nom]="apercu().name" [image]="imageApercu()" [taille]="76" />
+        <div class="apercu__identite">
+          <p class="apercu__nom" [class.vide]="!apercu().name">{{ apercu().name || 'Nom complet' }}</p>
+          <p class="apercu__fonction" [class.vide]="!apercu().fonction">{{ apercu().fonction || 'Fonction' }}</p>
+        </div>
+        <app-role-badge [role]="apercu().role" />
+        <p class="apercu__email">
+          <app-icon name="mail" [size]="14" />
+          <span>{{ apercu().email || 'prenom.nom@entreprise.sn' }}</span>
+        </p>
+      </div>
+      <p class="apercu__note">Sans photo, un avatar illustré est généré à l'enregistrement.</p>
+    </aside>
+
+    <form class="formulaire" [formGroup]="form" (ngSubmit)="enregistrer()" novalidate>
+      <!-- Identité -->
+      <section class="section">
+        <div class="section__tete">
+          <h2 class="section__titre">Identité</h2>
+          <p class="section__desc">Le nom affiché dans l'annuaire et l'adresse professionnelle.</p>
+        </div>
+        <div class="section__champs">
+          <div class="field">
+            <label class="field__label" for="name">Nom complet<span class="field__requis">*</span></label>
+            <input
+              id="name"
+              class="input"
+              type="text"
+              formControlName="name"
+              autocomplete="name"
+              placeholder="Ex. : Awa Ndiaye"
+              [attr.aria-invalid]="invalide('name')"
+              [attr.aria-describedby]="invalide('name') ? 'name-erreur' : null"
+            />
+            @if (invalide('name')) {
+              <p id="name-erreur" class="field__erreur">
+                <app-icon name="alert" [size]="14" />
+                @if (form.controls.name.hasError('required')) {
+                  Le nom est obligatoire.
+                } @else if (form.controls.name.hasError('minlength')) {
+                  Le nom doit contenir au moins 2 caractères.
+                } @else {
+                  Le nom ne doit pas dépasser 60 caractères.
+                }
+              </p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="email">E-mail professionnel<span class="field__requis">*</span></label>
+            <input
+              id="email"
+              class="input"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              placeholder="prenom.nom@entreprise.sn"
+              [attr.aria-invalid]="invalide('email')"
+              [attr.aria-describedby]="invalide('email') ? 'email-erreur' : null"
+            />
+            @if (invalide('email')) {
+              <p id="email-erreur" class="field__erreur">
+                <app-icon name="alert" [size]="14" />
+                @if (form.controls.email.hasError('required')) {
+                  L'e-mail est obligatoire.
+                } @else if (form.controls.email.hasError('dejaUtilise')) {
+                  Cette adresse est déjà attribuée à un autre employé.
+                } @else {
+                  Saisissez une adresse e-mail valide.
+                }
+              </p>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Poste -->
+      <section class="section">
+        <div class="section__tete">
+          <h2 class="section__titre">Poste</h2>
+          <p class="section__desc">La fonction occupée et le niveau dans l'organisation.</p>
+        </div>
+        <div class="section__champs">
+          <div class="field">
+            <label class="field__label" for="fonction">Fonction<span class="field__requis">*</span></label>
+            <input
+              id="fonction"
+              class="input"
+              type="text"
+              list="fonctions-suggerees"
+              formControlName="fonction"
+              placeholder="Ex. : Ingénieur DevOps"
+              [attr.aria-invalid]="invalide('fonction')"
+              [attr.aria-describedby]="invalide('fonction') ? 'fonction-erreur' : null"
+            />
+            <datalist id="fonctions-suggerees">
+              @for (fonction of fonctionsSuggerees; track fonction) {
+                <option [value]="fonction"></option>
+              }
+            </datalist>
+            @if (invalide('fonction')) {
+              <p id="fonction-erreur" class="field__erreur">
+                <app-icon name="alert" [size]="14" />
+                @if (form.controls.fonction.hasError('required')) {
+                  La fonction est obligatoire.
+                } @else {
+                  La fonction ne doit pas dépasser 60 caractères.
+                }
+              </p>
+            }
+          </div>
+
+          <fieldset class="field">
+            <legend class="field__label">Rôle<span class="field__requis">*</span></legend>
+            <div class="roles">
+              @for (role of roles; track role; let i = $index) {
+                <label class="role" [attr.data-slot]="i + 1">
+                  <input type="radio" name="role" formControlName="role" [value]="role" />
+                  <span class="role__point" aria-hidden="true"></span>
+                  {{ role }}
+                </label>
+              }
+            </div>
+            @if (invalide('role')) {
+              <p class="field__erreur">
+                <app-icon name="alert" [size]="14" />
+                Choisissez un rôle.
+              </p>
+            }
+          </fieldset>
+        </div>
+      </section>
+
+      <!-- Photo -->
+      <section class="section">
+        <div class="section__tete">
+          <h2 class="section__titre">Photo</h2>
+          <p class="section__desc">Facultatif : l'adresse d'une image en ligne.</p>
+        </div>
+        <div class="section__champs">
+          <div class="field">
+            <label class="field__label" for="image">URL de la photo</label>
+            <div class="input-icone">
+              <app-icon name="image" [size]="17" />
+              <input
+                id="image"
+                class="input"
+                type="url"
+                formControlName="image"
+                placeholder="https://…"
+                [attr.aria-invalid]="invalide('image')"
+                [attr.aria-describedby]="invalide('image') ? 'image-erreur' : 'image-aide'"
+              />
+            </div>
+            @if (invalide('image')) {
+              <p id="image-erreur" class="field__erreur">
+                <app-icon name="alert" [size]="14" />
+                Saisissez une URL commençant par http:// ou https://.
+              </p>
+            } @else {
+              <p id="image-aide" class="field__aide">Laissez vide pour utiliser un avatar généré.</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      @if (erreurEnregistrement(); as message) {
+        <div class="alerte" role="alert">
+          <app-icon name="alert" [size]="18" />
+          <span>{{ message }}</span>
+        </div>
+      }
+
+      <div class="formulaire__actions">
+        <a class="btn btn-ghost" routerLink="/employes">Annuler</a>
+        <button type="submit" class="btn btn-primary" [disabled]="enregistrement()">
+          @if (enregistrement()) {
+            <span class="spinner" aria-hidden="true"></span>
+            Enregistrement…
+          } @else {
+            <app-icon name="check" [size]="16" />
+            {{ modeEdition() ? 'Enregistrer les modifications' : "Ajouter l'employé" }}
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+}

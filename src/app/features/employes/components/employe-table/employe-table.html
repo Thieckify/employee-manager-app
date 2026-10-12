@@ -1,0 +1,51 @@
+<div class="tableau">
+  <table>
+    <caption class="sr-only">Liste des employés</caption>
+    <thead>
+      <tr>
+        <th scope="col">Employé</th>
+        <th scope="col">Fonction</th>
+        <th scope="col">Rôle</th>
+        <th scope="col"><span class="sr-only">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (employe of employes(); track employe.id) {
+        <tr>
+          <td>
+            <div class="identite">
+              <app-avatar [nom]="employe.name" [image]="employe.image" [taille]="36" />
+              <div class="identite__texte">
+                <span class="identite__nom">{{ employe.name }}</span>
+                <span class="identite__email">{{ employe.email || 'E-mail non renseigné' }}</span>
+              </div>
+            </div>
+          </td>
+          <td class="fonction">{{ employe.fonction || '—' }}</td>
+          <td><app-role-badge [role]="employe.role" /></td>
+          <td>
+            <div class="actions">
+              <a
+                class="btn btn-ghost btn-sm btn-icon"
+                title="Modifier"
+                [attr.aria-label]="'Modifier ' + employe.name"
+                [routerLink]="['/edit', employe.id]"
+              >
+                <app-icon name="pencil" [size]="15" />
+              </a>
+              <button
+                type="button"
+                class="btn btn-ghost-danger btn-sm btn-icon"
+                title="Supprimer"
+                [attr.aria-label]="'Supprimer ' + employe.name"
+                (click)="supprimer.emit(employe)"
+              >
+                <app-icon name="trash" [size]="15" />
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

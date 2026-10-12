@@ -1,0 +1,4 @@
+// Point d'entrée des styles globaux : le design system est découpé en couches.
+@use 'styles/tokens';
+@use 'styles/base';
+@use 'styles/components';

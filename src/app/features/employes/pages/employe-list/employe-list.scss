@@ -1,0 +1,168 @@
+.alerte {
+  margin-bottom: 16px;
+}
+
+// ── Barre d'outils : recherche, filtres, mode d'affichage ──
+.outils {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0 12px;
+}
+
+.recherche {
+  flex: 1 1 260px;
+  max-width: 360px;
+}
+
+// Base 0 : la rangée de filtres prend la place restante et défile, sans repousser le sélecteur de vue.
+.filtres {
+  display: flex;
+  flex: 1 1 0;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filtre {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+
+  &:hover {
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  &[aria-pressed='true'] {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--bg);
+
+    .filtre__nombre {
+      color: color-mix(in srgb, var(--bg) 65%, transparent);
+    }
+  }
+}
+
+.filtre__point {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--role);
+}
+
+.filtre__nombre {
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.vues {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: auto;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface-2);
+}
+
+.vue {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+
+  &:hover {
+    color: var(--text);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-xs);
+  }
+}
+
+.resume {
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+// ── Contenu ──
+.grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+// ── Squelette du premier chargement ──
+.squelette {
+  display: grid;
+  gap: 18px;
+}
+
+.squelette__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.squelette__tuile {
+  height: 126px;
+  border-radius: var(--radius-lg);
+}
+
+.squelette__outils {
+  width: min(100%, 520px);
+  height: 40px;
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+.squelette__carte {
+  height: 230px;
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 720px) {
+  .recherche {
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  .vues {
+    margin-left: 0;
+  }
+}

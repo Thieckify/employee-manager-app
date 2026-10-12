@@ -1,0 +1,151 @@
+<header class="page-tete">
+  <div class="page-tete__texte">
+    <span class="eyebrow">Annuaire</span>
+    <h1 class="display">Votre <em>équipe</em></h1>
+    <p class="lead">Retrouvez vos collaborateurs, accueillez de nouveaux profils et gardez l'annuaire à jour.</p>
+  </div>
+  <a class="btn btn-primary" routerLink="/add">
+    <app-icon name="plus" [size]="17" />
+    Nouvel employé
+  </a>
+</header>
+
+@if (chargement()) {
+  <div class="squelette" aria-busy="true" aria-label="Chargement de l'équipe">
+    <div class="squelette__stats">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="skeleton squelette__tuile"></div>
+      }
+    </div>
+    <div class="skeleton squelette__outils"></div>
+    <div class="grille">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="skeleton squelette__carte"></div>
+      }
+    </div>
+  </div>
+} @else if (erreur() && total() === 0) {
+  <div class="etat etat--erreur" role="alert">
+    <span class="etat__icone"><app-icon name="alert" [size]="22" /></span>
+    <p class="etat__titre">Impossible de charger l'équipe</p>
+    <p class="etat__texte">{{ erreur() }}</p>
+    <button type="button" class="btn btn-secondary" (click)="recharger()">
+      <app-icon name="refresh" [size]="16" />
+      Réessayer
+    </button>
+  </div>
+} @else {
+  @if (erreur(); as message) {
+    <div class="alerte" role="alert">
+      <app-icon name="alert" [size]="18" />
+      <span>{{ message }}</span>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="recharger()">Réessayer</button>
+    </div>
+  }
+
+  <app-employe-stats [statistiques]="statistiques()" />
+
+  <div class="outils">
+    <div class="input-icone recherche">
+      <app-icon name="search" [size]="17" />
+      <input
+        #champRecherche
+        class="input"
+        type="search"
+        placeholder="Nom, fonction, e-mail…"
+        aria-label="Rechercher un employé"
+        [value]="recherche()"
+        (input)="recherche.set(champRecherche.value)"
+      />
+    </div>
+
+    <div class="filtres" role="group" aria-label="Filtrer par rôle">
+      <button type="button" class="filtre" [attr.aria-pressed]="roleFiltre() === null" (click)="roleFiltre.set(null)">
+        Tous
+        <span class="filtre__nombre">{{ total() }}</span>
+      </button>
+      @for (ligne of rolesPresents(); track ligne.role) {
+        <button
+          type="button"
+          class="filtre"
+          [attr.data-slot]="ligne.slot"
+          [attr.aria-pressed]="roleFiltre() === ligne.role"
+          (click)="basculerRole(ligne.role)"
+        >
+          <span class="filtre__point" aria-hidden="true"></span>
+          {{ ligne.role }}
+          <span class="filtre__nombre">{{ ligne.effectif }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="vues" role="group" aria-label="Mode d'affichage">
+      <button
+        type="button"
+        class="vue"
+        title="Grille"
+        aria-label="Affichage en grille"
+        [attr.aria-pressed]="vue() === 'grille'"
+        (click)="vue.set('grille')"
+      >
+        <app-icon name="grid" [size]="16" />
+      </button>
+      <button
+        type="button"
+        class="vue"
+        title="Liste"
+        aria-label="Affichage en liste"
+        [attr.aria-pressed]="vue() === 'liste'"
+        (click)="vue.set('liste')"
+      >
+        <app-icon name="list" [size]="16" />
+      </button>
+    </div>
+  </div>
+
+  <p class="resume" aria-live="polite">
+    {{ resultats().length }} {{ resultats().length > 1 ? 'collaborateurs' : 'collaborateur' }}
+    @if (filtresActifs()) {
+      sur {{ total() }}
+    }
+  </p>
+
+  @if (total() === 0) {
+    <div class="etat">
+      <span class="etat__icone"><app-icon name="users" [size]="22" /></span>
+      <p class="etat__titre">Aucun employé pour le moment</p>
+      <p class="etat__texte">Commencez par ajouter le premier membre de votre équipe.</p>
+      <a class="btn btn-primary" routerLink="/add">
+        <app-icon name="plus" [size]="17" />
+        Ajouter un employé
+      </a>
+    </div>
+  } @else if (resultats().length === 0) {
+    <div class="etat">
+      <span class="etat__icone"><app-icon name="search-x" [size]="22" /></span>
+      <p class="etat__titre">Aucun résultat</p>
+      <p class="etat__texte">Aucun collaborateur ne correspond à ces critères. Essayez un autre terme ou retirez les filtres.</p>
+      <button type="button" class="btn btn-secondary" (click)="reinitialiserFiltres()">Réinitialiser les filtres</button>
+    </div>
+  } @else if (vue() === 'grille') {
+    <div class="grille">
+      @for (employe of resultats(); track employe.id; let i = $index) {
+        <app-employe-card [employe]="employe" [style.--i]="i" (supprimer)="demanderSuppression($event)" />
+      }
+    </div>
+  } @else {
+    <app-employe-table [employes]="resultats()" (supprimer)="demanderSuppression($event)" />
+  }
+}
+
+<app-confirm-dialog
+  titre="Supprimer cette fiche ?"
+  libelleConfirmation="Supprimer"
+  [ouvert]="aSupprimer() !== null"
+  [enCours]="suppressionEnCours()"
+  (confirmer)="confirmerSuppression()"
+  (annuler)="annulerSuppression()"
+>
+  La fiche de <strong>{{ aSupprimer()?.name }}</strong> sera définitivement retirée de l'annuaire.
+  Cette action est irréversible.
+</app-confirm-dialog>

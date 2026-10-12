@@ -1,0 +1,27 @@
+<a class="skip-link" href="#contenu" (click)="allerAuContenu($event, contenu)">Aller au contenu</a>
+
+<header class="topbar">
+  <div class="container topbar__contenu">
+    <a class="marque" routerLink="/employes">
+      <span class="marque__logo" aria-hidden="true"><app-icon name="users" [size]="17" /></span>
+      <span>Employee Manager</span>
+    </a>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <a routerLink="/employes" routerLinkActive="actif" ariaCurrentWhenActive="page">
+        <app-icon name="users" [size]="16" />
+        Équipe
+      </a>
+      <a routerLink="/add" routerLinkActive="actif" ariaCurrentWhenActive="page">
+        <app-icon name="plus" [size]="16" />
+        Ajouter
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main #contenu id="contenu" class="container" tabindex="-1">
+  <router-outlet />
+</main>
+
+<app-toast-outlet />

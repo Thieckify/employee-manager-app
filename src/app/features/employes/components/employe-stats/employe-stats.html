@@ -1,0 +1,59 @@
+<section class="stats" aria-label="Indicateurs de l'équipe">
+  <article class="tuile">
+    <div class="tuile__tete">
+      <span class="tuile__label">Effectif</span>
+      <span class="tuile__icone"><app-icon name="users" [size]="16" /></span>
+    </div>
+    <p class="tuile__valeur">{{ statistiques().effectif }}</p>
+    <p class="tuile__detail">collaborateurs dans l'annuaire</p>
+  </article>
+
+  <article class="tuile">
+    <div class="tuile__tete">
+      <span class="tuile__label">Encadrement</span>
+      <span class="tuile__icone"><app-icon name="award" [size]="16" /></span>
+    </div>
+    <p class="tuile__valeur">{{ statistiques().encadrement }}</p>
+    <p class="tuile__detail">{{ statistiques().tauxEncadrement }} % de l'effectif</p>
+  </article>
+
+  <article class="tuile">
+    <div class="tuile__tete">
+      <span class="tuile__label">Fonctions</span>
+      <span class="tuile__icone"><app-icon name="briefcase" [size]="16" /></span>
+    </div>
+    <p class="tuile__valeur">{{ statistiques().fonctions }}</p>
+    <p class="tuile__detail">métiers représentés</p>
+  </article>
+
+  <article class="tuile tuile--repartition">
+    <div class="tuile__tete">
+      <span class="tuile__label">Répartition par rôle</span>
+      <span class="tuile__icone"><app-icon name="chart" [size]="16" /></span>
+    </div>
+
+    @if (segments().length > 0) {
+      <div class="barre" role="img" [attr.aria-label]="resume()">
+        @for (segment of segments(); track segment.role) {
+          <span class="barre__segment" [attr.data-slot]="segment.slot" [style.flex-grow]="segment.effectif">
+            <span class="bulle" aria-hidden="true">
+              {{ segment.role }} · {{ segment.effectif }} ({{ segment.part }} %)
+            </span>
+          </span>
+        }
+      </div>
+
+      <ul class="legende" aria-hidden="true">
+        @for (segment of segments(); track segment.role) {
+          <li [attr.data-slot]="segment.slot">
+            <span class="legende__point"></span>
+            {{ segment.role }}
+            <span class="legende__nombre">{{ segment.effectif }}</span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="tuile__detail">Aucun rôle renseigné pour le moment.</p>
+    }
+  </article>
+</section>

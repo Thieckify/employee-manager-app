@@ -1,0 +1,325 @@
+// Briques d'interface partagées : en-têtes de page, boutons, champs, états, squelettes.
+
+// ── En-tête de page ─────────────────────────────────────────
+.page-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 32px;
+  margin: 44px 0 28px;
+}
+
+.page-tete__texte {
+  display: grid;
+  gap: 12px;
+}
+
+// ── Boutons ────────────────────────────────────────────────
+.btn {
+  --btn-h: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--btn-h);
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 14%),
+    0 1px 2px rgb(0 0 0 / 12%),
+    0 6px 16px -6px var(--ring);
+
+  &:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+}
+
+.btn-secondary {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-xs);
+
+  &:hover:not(:disabled) {
+    border-color: var(--border-strong);
+    background: var(--surface-2);
+  }
+}
+
+.btn-ghost {
+  color: var(--text-2);
+
+  &:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: var(--on-danger);
+
+  &:hover:not(:disabled) {
+    background: var(--danger-hover);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px var(--ring-danger);
+  }
+}
+
+.btn-ghost-danger {
+  color: var(--text-3);
+
+  &:hover:not(:disabled) {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px var(--ring-danger);
+  }
+}
+
+.btn-sm {
+  --btn-h: 34px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.btn-icon {
+  width: var(--btn-h);
+  padding: 0;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: tourner 0.7s linear infinite;
+}
+
+// ── Champs de formulaire ───────────────────────────────────
+.field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field__label {
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.field__requis {
+  margin-left: 2px;
+  color: var(--text-3);
+}
+
+.field__aide {
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.field__erreur {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--danger);
+  animation: apparaitre 200ms var(--ease-out);
+}
+
+.input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14.5px;
+  box-shadow: var(--shadow-xs);
+  transition:
+    border-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out);
+
+  &::placeholder {
+    color: var(--text-3);
+  }
+
+  &:hover {
+    border-color: var(--border-strong);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--danger);
+
+    &:focus {
+      box-shadow: 0 0 0 3px var(--ring-danger);
+    }
+  }
+}
+
+// Champ précédé d'une icône
+.input-icone {
+  position: relative;
+
+  > app-icon {
+    position: absolute;
+    top: 50%;
+    left: 13px;
+    translate: 0 -50%;
+    color: var(--text-3);
+    pointer-events: none;
+  }
+
+  > .input {
+    padding-left: 40px;
+  }
+}
+
+// ── Couleur d'identité de chaque rôle (ordre du catalogue) ─
+[data-slot='1'] { --role: var(--serie-1); }
+[data-slot='2'] { --role: var(--serie-2); }
+[data-slot='3'] { --role: var(--serie-3); }
+[data-slot='4'] { --role: var(--serie-4); }
+[data-slot='5'] { --role: var(--serie-5); }
+[data-slot='6'] { --role: var(--serie-6); }
+
+// ── États (vide, erreur) ───────────────────────────────────
+.etat {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 56px 24px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  text-align: center;
+  animation: apparaitre 260ms var(--ease-out);
+}
+
+.etat__icone {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.etat--erreur .etat__icone {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.etat__titre {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.etat__texte {
+  max-width: 44ch;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+// Bandeau d'alerte en ligne
+.alerte {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 14px;
+
+  > span {
+    flex: 1;
+  }
+}
+
+// ── Squelettes de chargement ───────────────────────────────
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%);
+  background-size: 200% 100%;
+  animation: miroiter 1.4s ease-in-out infinite;
+}
+
+// ── Animations ─────────────────────────────────────────────
+@keyframes apparaitre {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes tourner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes miroiter {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
